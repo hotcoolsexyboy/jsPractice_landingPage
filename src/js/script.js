@@ -36,10 +36,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
   //Timer
 
-  let deadline = '2020-03-25';
+ //let deadline = '2020-03-25';
+  let tomorrow = Date.parse(new Date()) + 8640000,
+      deadline = tomorrow;
 
   function getTimeRemaining(endtime) {
-    let t = Date.parse(endtime) - Date.parse(new Date()),
+    let t = endtime - Date.parse(new Date()),
         seconds = Math.floor((t/1000) % 60),
         minutes = Math.floor((t/1000/60) % 60),
         hours = Math.floor((t/(1000*60*60)));
@@ -116,43 +118,44 @@ window.addEventListener('DOMContentLoaded', function() {
     success: 'Спасибо! Скоро мы с вами свяжемся!',
     failure: 'Что-то пошло не так'
   };
+  function sendForm(name) {
+    let form = document.querySelector(name),
+    input = form.getElementsByTagName('input'),
+    statusMessage = document.createElement('div');
 
-  let form = document.querySelector('.main-form'),
-      input = form.getElementsByTagName('input'),
-      statusMessage = document.createElement('div');
+    statusMessage.classList.add('status');
 
-      statusMessage.classList.add('status');
+    form.onsubmit = function(event) {
+      event.preventDefault();
+      form.appendChild(statusMessage);
 
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    form.appendChild(statusMessage);
+      let request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+      request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
 
-    let request = new XMLHttpRequest();
-    request.open('POST', 'server.php');
-    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+      let formData = new FormData(form);
+      let obj = {};
+      formData.forEach(function(value, key) {
+        obj[key] = value;
+      });
+      let json = JSON.stringify(obj);
+      request.send(json);
 
-    let formData = new FormData(form);
+      request.onreadystatechange = function() {
+        if(request.readyState < 4) {
+          statusMessage.innerHTML = message.loading;
+        } else if(request.readyState === 4 && request.status == 200) {
+          statusMessage.innerHTML = message.success;
+        } else {
+          statusMessage.innerHTML = message.failure;
+        }
+      };
 
-    let obj = {};
-    formData.forEach(function(value, key) {
-      obj[key] = value;
-    });
-    let json = JSON.stringify(obj);
-
-    request.send(json);
-
-    request.addEventListener('readystatechange', function() {
-      if(request.readyState < 4) {
-        statusMessage.innerHTML = message.loading;
-      } else if(request.readyState === 4 && request.status == 200) {
-        statusMessage.innerHTML = message.success;
-      } else {
-        statusMessage.innerHTML = message.failure;
+      for(let i = 0; i < input.length; i++) {
+        input[i].value = '';
       }
-    }); 
-
-    for(let i = 0; i < input.length; i++) {
-      input[i].value = '';
-    }
-  });
+    };
+  }
+  sendForm('.main-form');
+  sendForm('#form');
 });
