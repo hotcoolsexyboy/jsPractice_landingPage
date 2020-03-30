@@ -1,4 +1,7 @@
-window.addEventListener("DOMContentLoaded", function () {
+require("nodelist-foreach-polyfill");
+require("formdata-polyfill");
+
+window.addEventListener("DOMContentLoaded", function() {
   "use strict";
 
   let calculator = require("./parts/calculator"),
