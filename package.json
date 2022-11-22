@@ -26,7 +26,7 @@
     "nodelist-foreach-polyfill": "^1.2.0",
     "path": "^0.12.7",
     "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.10.3",
     "es6-promise": "^4.2.8"
   }
